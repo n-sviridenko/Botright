@@ -35,6 +35,7 @@ class Botright(AsyncObject):
         spoof_canvas: Optional[bool] = True,
         mask_fingerprint: Optional[bool] = True,
         use_undetected_playwright: Optional[bool] = False,
+        user_data_dir: Optional[str] = None,
     ) -> None:
         """
         Initialize a Botright instance with specified configurations.
@@ -62,6 +63,7 @@ class Botright(AsyncObject):
         spoof_canvas: Optional[bool] = True,
         mask_fingerprint: Optional[bool] = True,
         use_undetected_playwright: Optional[bool] = False,
+        user_data_dir: Optional[str] = None,
     ) -> None:
         """
         Initialize a Botright instance with specified configurations.
@@ -98,6 +100,7 @@ class Botright(AsyncObject):
         self.user_action_layer = user_action_layer
         self.mask_fingerprint = mask_fingerprint
         self.use_undetected_playwright = use_undetected_playwright
+        self.user_data_dir = user_data_dir
         self.cache: Dict[str, APIResponse] = {}
 
         # '--disable-gpu', '--incognito', '--disable-blink-features=AutomationControlled'

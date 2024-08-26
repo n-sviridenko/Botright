@@ -81,17 +81,17 @@ async def new_browser(botright: Botright, proxy: ProxyManager, faker: Faker, fla
         temp_dir = TemporaryDirectory(prefix="botright-", ignore_cleanup_errors=True)
     else:
         temp_dir = TemporaryDirectory(prefix="botright-")
-    temp_dir_path = temp_dir.name
+    user_data_dir = botright.user_data_dir or temp_dir.name
     botright.temp_dirs.append(temp_dir)
 
     # Spawning a new Context for more options
     if proxy.browser_proxy:
         _browser = await botright.playwright.chromium.launch_persistent_context(
-            user_data_dir=temp_dir_path, headless=botright.headless, executable_path=botright.browser["path"], args=flags, chromium_sandbox=True, **parsed_launch_arguments
+            user_data_dir=user_data_dir, headless=botright.headless, executable_path=botright.browser["path"], args=flags, chromium_sandbox=True, **parsed_launch_arguments
         )
     else:
         _browser = await botright.playwright.chromium.launch_persistent_context(
-            user_data_dir=temp_dir_path, headless=botright.headless, executable_path=botright.browser["path"], args=flags, chromium_sandbox=True, **parsed_launch_arguments
+            user_data_dir=user_data_dir, headless=botright.headless, executable_path=botright.browser["path"], args=flags, chromium_sandbox=True, **parsed_launch_arguments
         )
 
     browser = BrowserContext(
