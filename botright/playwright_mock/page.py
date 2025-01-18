@@ -32,9 +32,8 @@ from playwright.async_api import Position
 from playwright.async_api import Request as PlaywrightRequest
 from playwright.async_api import Route as PlaywrightRoute
 from playwright.async_api import Worker as PlaywrightWorker
-from recognizer.agents.playwright import AsyncChallenger
 
-from botright.modules import Faker, hcaptcha  # , geetest
+from botright.modules import Faker
 
 # fmt: on
 
@@ -97,8 +96,6 @@ class Page(PlaywrightPage):
         else:
             self._keyboard = Keyboard(page.keyboard, self)
         self.cdp: Optional[PlaywrightCDPSession] = None
-        self.hcaptcha_solver = hcaptcha.hCaptcha(browser, self)
-        self.recaptcha_solver = AsyncChallenger(self)
 
         # Aliases
         self._origin_close = page.close
@@ -209,31 +206,6 @@ class Page(PlaywrightPage):
                 'document.addEventListener("mouseup",e=>{t.beginPath(),t.arc(e.clientX,e.clientY,9,0,360,!1),t.fillStyle="blue",t.fill(),t.closePath()})});'
             )
 
-    async def solve_hcaptcha(self, rq_data: Optional[str] = None) -> Optional[str]:
-        """
-        Mocks solving an hCaptcha challenge on a page.
-
-        Args:
-            rq_data (Optional[str]): Additional request data for solving the challenge.
-
-        Returns:
-            Optional[str]: The hCaptcha token if the challenge is solved successfully, otherwise None.
-        """
-        return await self.hcaptcha_solver.solve_hcaptcha(rq_data=rq_data)
-
-    async def get_hcaptcha(self, site_key: Optional[str] = "00000000-0000-0000-0000-000000000000", rq_data: Optional[str] = None) -> Optional[str]:
-        """
-        Get a hCaptcha Key with Sitekey & rqData
-
-        Args:
-            site_key (Optional[str]): The hCaptcha site key to use.
-            rq_data (Optional[str]): Additional request data for the challenge.
-
-        Returns:
-            Optional[str]: The hCaptcha token if the challenge is retrieved successfully, otherwise None.
-        """
-        return await self.hcaptcha_solver.get_hcaptcha(site_key=site_key, rq_data=rq_data)
-
     async def solve_geetest(self, mode: Optional[str] = "canny") -> str:
         """
         Mocks solving a Geetest challenge on a page.
@@ -246,18 +218,6 @@ class Page(PlaywrightPage):
         """
         # return await geetest.solve_geetest(self, mode=mode)
         raise NotImplementedError("Geetest challenge currently unavailable!")
-
-    async def solve_recaptcha(self) -> Union[str, bool]:
-        """
-        Mocks solving a ReCaptcha challenge on a page.
-
-        Returns:
-            Union[str, bool]: The ReCaptcha token if the challenge is solved successfully, otherwise None.
-        """
-        result: Union[str, bool] = await self.recaptcha_solver.solve_recaptcha()
-        return result
-
-    visual_recaptcha = solve_recaptcha
 
     async def close(self, run_before_unload: Optional[bool] = None, reason: Optional[str] = None):
         await self._origin_close(run_before_unload=run_before_unload, reason=reason)
