@@ -41,9 +41,10 @@ async def new_cdp_browser(botright: Botright, proxy: ProxyManager, faker: Faker,
     """
 
     _browser = await botright.playwright.chromium.connect_over_cdp(endpoint_url)
+    _browser_context = _browser.contexts[0] if _browser.contexts else await _browser.new_context()
 
     browser = BrowserContext(
-        _browser,
+        _browser_context,
         proxy,
         faker,
         use_undetected_playwright=botright.use_undetected_playwright,
