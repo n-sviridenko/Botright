@@ -134,7 +134,7 @@ class Botright(AsyncObject):
 
         self.fingerprint_generator = AsyncFingerprintGenerator()
 
-    async def new_browser(self, proxy: Optional[str] = None, **launch_arguments) -> BrowserContext:
+    async def new_browser(self, proxy: Optional[str] = None, cdp_endpoint: Optional[str] = None, **launch_arguments) -> BrowserContext:
         """
         Create a new Botright browser instance with specified configurations.
 
@@ -156,7 +156,10 @@ class Botright(AsyncObject):
         else:
             flags = self.flags
 
-        _browser = await browser.new_browser(self, _proxy, _faker, flags, **launch_arguments)
+        if cdp_endpoint:
+            _browser = await browser.new_cdp_browser(self, _proxy, _faker, cdp_endpoint)
+        else:
+            _browser = await browser.new_browser(self, _proxy, _faker, flags, **launch_arguments)
         _browser.proxy = _proxy
         _browser.faker = _faker
         _browser.user_action_layer = self.user_action_layer

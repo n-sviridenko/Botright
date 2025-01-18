@@ -27,6 +27,40 @@ from . import ElementHandle, Frame, JSHandle, Page, Request, Route, new_page
 if TYPE_CHECKING:
     from botright import Botright
 
+async def new_cdp_browser(botright: Botright, proxy: ProxyManager, faker: Faker, endpoint_url: str) -> BrowserContext:
+    """
+    Create a new CDP-connected browser context with custom configurations.
+
+    Args:
+        botright (Botright): The Botright Instance from the main thread.
+        proxy (ProxyManager): An instance of ProxyManager for configuring proxy settings.
+        faker (Faker): An instance of Faker for generating fake user agent and other details.
+
+    Returns:
+        BrowserContext: A new browser context with the specified configurations.
+    """
+
+    _browser = await botright.playwright.chromium.connect_over_cdp(endpoint_url)
+
+    browser = BrowserContext(
+        _browser,
+        proxy,
+        faker,
+        use_undetected_playwright=botright.use_undetected_playwright,
+        cache=botright.cache,
+        user_action_layer=botright.user_action_layer,
+        mask_fingerprint=botright.mask_fingerprint,
+        scroll_into_view=botright.scroll_into_view,
+    )
+
+    # Preprocessing to save computing resources
+    if botright.block_images:
+        await browser.block_images()
+
+    if botright.cache_responses:
+        await browser.cache_responses()
+
+    return browser
 
 async def new_browser(botright: Botright, proxy: ProxyManager, faker: Faker, flags: List[str], **launch_arguments) -> BrowserContext:
     """
